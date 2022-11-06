@@ -3,16 +3,16 @@ const Cards = require('../models/cardScheme');
 const {
   NOT_FOUND,
   CAST_ERROR,
-  ERR500,
-  ERR400,
-  ERR404,
+  defaultErr,
+  badRequest,
+  notFound,
 } = require('../constants/constant');
 
 module.exports.getCard = (req, res) => {
   Cards.find({})
     .then((card) => res.status(200).send(card))
     .catch(() => {
-      res.status(500).send({ message: ERR500 });
+      res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -24,9 +24,9 @@ module.exports.createCard = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные при создании карточки' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -38,12 +38,12 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные карточки' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Карточка с указанным _id не найдена' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -55,12 +55,12 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные для постановки лайка' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Передан несуществующий _id карточки' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -72,11 +72,11 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные для снятии лайка' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Передан несуществующий _id карточки' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };

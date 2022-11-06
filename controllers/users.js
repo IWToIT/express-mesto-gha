@@ -3,16 +3,16 @@ const Users = require('../models/userScheme');
 const {
   NOT_FOUND,
   CAST_ERROR,
-  ERR500,
-  ERR400,
-  ERR404,
+  defaultErr,
+  badRequest,
+  notFound,
 } = require('../constants/constant');
 
 module.exports.getUsers = (req, res) => {
   Users.find({})
     .then((user) => res.status(200).send(user))
     .catch(() => {
-      res.status(500).send({ message: ERR500 });
+      res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -24,12 +24,12 @@ module.exports.getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные при поиске пользователя' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Запрашиваемый пользователь не найден' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -40,9 +40,9 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные при создании пользователя' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -64,12 +64,12 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Пользователь с указанным _id не найден' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -90,11 +90,11 @@ module.exports.updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: ERR400 });
+        return res.status(badRequest).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: ERR404 });
+        return res.status(notFound).send({ message: 'Пользователь с указанным _id не найден' });
       }
-      return res.status(500).send({ message: ERR500 });
+      return res.status(defaultErr).send({ message: 'На сервере произошла ошибка' });
     });
 };

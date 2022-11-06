@@ -64,7 +64,7 @@ module.exports.updateUser = (req, res) => {
 };
 
 module.exports.updateAvatar = (req, res) => {
-  Users.findByIdAndUpdate(req.user._id, req.body.updateAvatar, { new: true, runValidators: true })
+  Users.findByIdAndUpdate(req.user._id, req.body.avatar, { new: true, runValidators: true })
     .orFail(new Error(NOT_FOUND))
     .then((user) => {
       res.status(200).send(user);

@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
 const Users = require('../models/userScheme');
-const { NOT_FOUND, CAST_ERROR } = require('../constants/constant');
+const {
+  NOT_FOUND,
+  CAST_ERROR,
+  ERR500,
+  ERR400,
+  ERR404,
+} = require('../constants/constant');
 
 module.exports.getUsers = (req, res) => {
   Users.find({})
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
+    .catch(() => {
+      res.status(500).send({ message: ERR500 });
     });
 };
 
@@ -18,12 +24,12 @@ module.exports.getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {
-        return res.status(400).send({ message: 'Переданы некорректные данные при поиске пользователя' });
+        return res.status(400).send({ message: ERR400 });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        return res.status(404).send({ message: ERR404 });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: ERR500 });
     });
 };
 
@@ -34,9 +40,9 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        return res.status(400).send({ message: ERR400 });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: ERR500 });
     });
 };
 
@@ -48,28 +54,28 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        return res.status(400).send({ message: ERR400 });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: 'Пользователь с указанным _id не найден' });
+        return res.status(404).send({ message: ERR404 });
       }
-      return res.status(500).send({ message: err.name });
+      return res.status(500).send({ message: ERR500 });
     });
 };
 
 module.exports.updateAvatar = (req, res) => {
-  Users.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+  Users.findByIdAndUpdate(req.user._id, req.body.updateAvatar, { new: true, runValidators: true })
     .orFail(new Error(NOT_FOUND))
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: ' Переданы некорректные данные при обновлении аватара' });
+        return res.status(400).send({ message: ERR400 });
       }
       if (err.message === NOT_FOUND) {
-        return res.status(404).send({ message: 'Пользователь с указанным _id не найден' });
+        return res.status(404).send({ message: ERR404 });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: ERR500 });
     });
 };

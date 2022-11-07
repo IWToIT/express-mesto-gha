@@ -6,6 +6,7 @@ const {
   defaultErr,
   badRequest,
   notFound,
+  admitErr,
 } = require('../constants/constant');
 
 module.exports.getCard = (req, res) => {
@@ -34,7 +35,10 @@ module.exports.deleteCard = (req, res) => {
   Cards.findByIdAndRemove(req.params.cardId)
     .orFail(new Error(NOT_FOUND))
     .then((card) => {
-      res.status(200).send({ data: card });
+      if (card.owner.toString() !== req.user._id) {
+        return res.status(admitErr).send({ message: 'У вас отсутствуют права для удаления карточки' });
+      }
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === CAST_ERROR) {

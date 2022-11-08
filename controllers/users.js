@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 const Users = require('../models/userScheme');
 const {
   NOT_FOUND,
-  notFound,
-  dataErr,
   JWT_SECRET,
   ERR_EMAILPASSWORD,
   repeatErr,
+  notFound,
+  dataErr,
 } = require('../constants/constant');
 
 module.exports.login = (req, res, next) => {

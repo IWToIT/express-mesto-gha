@@ -6,10 +6,13 @@ const {
   NOT_FOUND,
   JWT_SECRET,
   ERR_EMAILPASSWORD,
-  repeatErr,
-  notFound,
-  dataErr,
+  ERR_VALIDATION,
+  CAST_ERROR,
 } = require('../constants/constant');
+const DublicateKeyError = require('../errors/DublicateKeyError');
+const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const BadReqError = require('../errors/BadReqError');
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -22,13 +25,10 @@ module.exports.login = (req, res, next) => {
         .send({ message: 'Пользователь успешно авторизирован' });
     })
     .catch((err) => {
-      if (err.message === NOT_FOUND) {
-        return res.status(dataErr).send({ message: 'Пользователя с таким email не существует' });
-      }
       if (err.message === ERR_EMAILPASSWORD) {
-        return res.status(dataErr).send({ message: 'Неправильные почта или пароль' });
+        return next(new UnauthorizedError({ message: 'Неправильные почта или пароль' }));
       }
-      return next();
+      return next(err);
     });
 };
 
@@ -58,10 +58,13 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => Users.findById(user._id))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.code === 11000) {
-        return res.status(repeatErr).send({ message: 'Пользователь с таким email уже существует' });
+      if (err.message === ERR_VALIDATION) {
+        return next(new BadReqError('Переданы некорректные данные при создании пользователя.'));
       }
-      return next();
+      if (err.code === 11000) {
+        return next(new DublicateKeyError('Пользователь с таким email уже существует.'));
+      }
+      return next(err);
     });
 };
 
@@ -82,10 +85,13 @@ module.exports.updateUser = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.message === NOT_FOUND) {
-        return res.status(notFound).send({ message: 'Пользователь с указанным _id не найден' });
+      if (err.message === ERR_VALIDATION) {
+        return next(new BadReqError('Переданы некорректные данные при обновлении пользователя.'));
       }
-      return next();
+      if (err.message === NOT_FOUND) {
+        return next(new NotFoundError('Пользователь с указанным _id не найден.'));
+      }
+      return next(err);
     });
 };
 
@@ -105,10 +111,13 @@ module.exports.updateAvatar = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.message === NOT_FOUND) {
-        return res.status(notFound).send({ message: 'Пользователь с указанным _id не найден' });
+      if (err.message === ERR_VALIDATION) {
+        return next(new BadReqError('Переданы некорректные данные при обновлении аватара пользователя.'));
       }
-      return next();
+      if (err.message === NOT_FOUND) {
+        return next(new NotFoundError('Пользователь с указанным _id не найден.'));
+      }
+      return next(err);
     });
 };
 
@@ -119,9 +128,12 @@ module.exports.getUser = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.message === NOT_FOUND) {
-        return res.status(notFound).send({ message: 'Запрашиваемый пользователь не найден' });
+      if (err.name === CAST_ERROR) {
+        next(new BadReqError('Переданы некорректный _id для поиска пользователя.'));
       }
-      return next();
+      if (err.message === NOT_FOUND) {
+        return next(new NotFoundError('Запрашиваемый пользователь не найден.'));
+      }
+      return next(err);
     });
 };

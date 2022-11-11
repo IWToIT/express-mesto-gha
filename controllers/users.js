@@ -22,11 +22,11 @@ module.exports.login = (req, res, next) => {
       res
         .cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true, sameSite: true })
         .status(200)
-        .send({ message: 'Пользователь успешно авторизирован' });
+        .send('Пользователь успешно авторизирован');
     })
     .catch((err) => {
       if (err.message === ERR_EMAILPASSWORD) {
-        return next(new UnauthorizedError({ message: 'Неправильные почта или пароль' }));
+        return next(new UnauthorizedError('Неправильные почта или пароль'));
       }
       return next(err);
     });
@@ -55,7 +55,12 @@ module.exports.createUser = (req, res, next) => {
       about,
       avatar,
     }))
-    .then((user) => Users.findById(user._id))
+    .then(() => res.send({
+      name,
+      about,
+      avatar,
+      email,
+    }))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.message === ERR_VALIDATION) {
@@ -107,8 +112,8 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .orFail(new Error(NOT_FOUND))
-    .then((user) => {
-      res.status(200).send(user);
+    .then((data) => {
+      res.send({ data });
     })
     .catch((err) => {
       if (err.message === ERR_VALIDATION) {

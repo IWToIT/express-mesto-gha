@@ -12,10 +12,12 @@ const {
   createUser,
   updateUser,
   updateAvatar,
+  logout,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
 router.get('/me', getUser);
+router.delete('/signout', logout);
 router.get('/:userId', validId('userId'), getUser);
 router.post('/', validAuthName, createUser);
 router.patch('/me', validUserInfo, updateUser);

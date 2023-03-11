@@ -1,16 +1,14 @@
-[![Tests](https://github.com/IWToIT/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/IWToIT/express-mesto-gha/actions/workflows/tests-13-sprint.yml) 
-# Проект Mesto бэкенд
+# Projekt Mesto backend
 
+## Dyrektoriat
 
-## Директории
-
-`/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
+` / routes ' — folder plików routera  
+` / controllers ' — folder z plikami kontrolerów użytkownika i karty   
+` / models ' — folder z plikami opisów schematów użytkownika i fiszek  
   
-Остальные директории вспомогательные, создаются при необходимости разработчиком
+Pozostałe katalogi są pomocnicze, tworzone w razie potrzeby przez programistę
 
-## Запуск проекта
+## Rozpoczęcie projektu
 
-`npm run start` — запускает сервер   
-`npm run dev` — запускает сервер с hot-reload
+'npm run start' - uruchamia serwer   
+'npm run dev' - uruchamia serwer z hot-reload
